@@ -119,8 +119,6 @@ def render_data_as_html(
             f"${p['orderPrice']:,.2f}",
             f"{p['orderSize']:.4f}",
             f"{p['positionSize']:.4f}",
-            f"${p['realizedPnL']:,.2f}",
-            f"${p['unrealizedPnL']:,.2f}",
             f"${p['totalPnL']:,.2f}",
             f"{p['equityLeverage']:,.2f}",
             "✅" if p.get("includeFlag") else "❌"
@@ -129,8 +127,8 @@ def render_data_as_html(
     ]
     html += render_table(
         "🛒 Order Plan",
-        ["Side", "Order Price", "Order Size", "Position Size", "Realized PnL",
-         "Unrealized PnL", "Total PnL", "Leverage", "Include"],
+        ["Side", "Price", "Size", "Position",
+         "Total PnL", "Leverage", "Include"],
         plan_fmt
     )
 
