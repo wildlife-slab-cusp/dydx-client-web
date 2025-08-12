@@ -79,7 +79,6 @@ def render_data_as_html(
     return_p = (100 * total_pnl / risk)
 
     pos_fmt = [[
-        side,
         size,
         f"${risk:,.2f}",
         f"${total_pnl:,.2f}",
@@ -91,7 +90,7 @@ def render_data_as_html(
 
     html += render_table(
         "📈 Position",
-        ["Side", "Size", "Deposit", "Total PnL", "Equity",
+        ["Size", "Deposit", "Total PnL", "Equity",
             "Return %", "Leverage", "Net Funding"],
         pos_fmt
     )
