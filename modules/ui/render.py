@@ -33,9 +33,11 @@ def render_table(title, headers, rows):
     return html
 
 def render_data_as_html(
-    timestamp, market, subaccount, position, filled_order,
+    block_height, market, subaccount, position, filled_order,
     open_orders, order_plan, order_actions
 ):
+
+    timestamp = block_height["time"][14:16]
 
     html = (
         "<html><head>"
@@ -43,7 +45,7 @@ def render_data_as_html(
         "<body style='font-family: sans-serif;'>")
     html += (
         "<h1>DYDX Account View</h1>"
-        f"<h4>⏱ Last Updated: {timestamp}</h4>")
+        f"<h4>⏱ Time Stamped: {timestamp} minutes past the hour</h4>")
 
     # 📊 Market Data
     try:

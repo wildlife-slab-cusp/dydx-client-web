@@ -1,171 +1,174 @@
-# plan_builder.py - updated 2025-08-09
+# plan_builder.py - updated 2025-08-13
 
 import os
 import math
 import psycopg2
 import sqlite3
 
+def build_order_plan(subaccount, filled_order, position):
+    """Build combined order plan for 'buy' and 'sell' sides."""
+    plan = []
 
-def select_plan_cfg():
-    """Select config from Neon Postgres plan_cfg table."""
+    # Select configuration values from Neon Postgres plan_cfg table
     db_url = os.environ.get("DATABASE_URL")
     if not db_url:
         raise RuntimeError("DATABASE_URL not set")
+    with psycopg2.connect(db_url) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    buy_order_size,
+                    sell_order_size,
+                    buy_price_delta,
+                    sell_price_delta,
+                    buy_orders_max_qty,
+                    sell_orders_max_qty,
+                    leverage_max,
+                    leverage_min
+                FROM plan_cfg
+            """)
+            (
+                buy_order_size,
+                sell_order_size,
+                buy_price_delta,
+                sell_price_delta,
+                buy_orders_max_qty,
+                sell_orders_max_qty,
+                leverage_max,
+                leverage_min
+            ) = cur.fetchone()
 
-    conn = psycopg2.connect(db_url)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM plan_cfg")
-    row = cur.fetchone()
-    keys = [desc[0] for desc in cur.description]
-    cfg = dict(zip(keys, row))
+    filled_price = filled_order["price"]
+    position_size = position["size"]
+    net_funding = position["netFunding"]
+    realized_pnl = position["realizedPnl"]
+    unrealized_pnl = position["unrealizedPnl"]
+    sum_open = position["sumOpen"]
+    sum_close = position["sumClose"]
 
-    cur.close()
-    conn.close()
-    return cfg
-
-
-def extract_plan_values(subaccount, filled_order, position):
-    """Extract plan values from dydx data."""
-
-    sub = subaccount
-    ord = filled_order
-    pos = position
-
-    data = {
-        "filled_price"  : float(ord.get("price", 0.0)),
-        "position_size" : float(pos.get("size", 0.0)),
-        "equity"        : float(sub.get("equity", 0.0)),
-        "net_funding"   : float(pos.get("netFunding", 0.0)),
-        "realized_pnl"  : float(pos.get("realizedPnl", 0.0)),
-        "unrealized_pnl": float(pos.get("unrealizedPnl", 0.0)),
-        "entry_price"   : float(pos.get("entryPrice", 0.0)),
-        "exit_price"    : float(pos.get("exitPrice", 0.0)),
-        "sum_open"      : float(pos.get("sumOpen", 0.0)),
-        "sum_close"     : float(pos.get("sumClose", 0.0)),
-    }
-
-    return data
-
-
-def build_order_plan(data, cfg, side):
-    """Build order plan for 'buy' or 'sell' side."""
-    import math
-    plan = []
-
-    accum_size  = cfg["current_accumulation"]
-    leverage_max = cfg["leverage_max"]
-    leverage_min = cfg["leverage_min"]
-
-    if side == "buy":
-        order_size = cfg["buy_order_size"]
-        delta      = cfg["buy_price_delta"]
-        count      = cfg["buy_orders_max_qty"]
-
-        price      = math.floor(
-            (data["filled_price"] - delta) / 1000
-        ) * 1000 + 500
-        pos_size   = data["position_size"] + order_size
-        entry_sum  = data["sum_open"] + order_size
-        entry_price = (
-            data["entry_price"] * data["sum_open"]
-            + order_size * price
-        ) / entry_sum
-        exit_sum   = data["sum_close"]
-        exit_price = data["exit_price"]
-
-    elif side == "sell":
-        order_size = cfg["sell_order_size"]
-        delta      = cfg["sell_price_delta"]
-        count      = cfg["sell_orders_max_qty"]
-
-        price      = math.floor(
-            (data["filled_price"] + delta) / 1000
-        ) * 1000 + 500
-        pos_size   = data["position_size"] - order_size
-        entry_sum  = data["sum_open"]
-        entry_price = data["entry_price"]
-        exit_sum   = data["sum_close"] + order_size
-        exit_price = (
-            data["exit_price"] * data["sum_close"]
-            + order_size * price
-        ) / exit_sum
-
-    else:
-        raise ValueError(f"Invalid side: {side}")
+    # Build Buy Plan
+    side = "buy"
+    equity = subaccount["equity"]
+    entry_price = position["entryPrice"]
+    exit_price = position["exitPrice"]
+    order_size = buy_order_size
+    delta = buy_price_delta
+    count = buy_orders_max_qty
+    price = math.floor((filled_price - delta) / 1000) * 1000 + 500
+    pos_size = position_size + order_size
+    entry_sum = sum_open + order_size
+    entry_price = (
+        entry_price * sum_open + order_size * price) / entry_sum
+    exit_sum = sum_close
 
     for i in range(count):
         if i > 0:
-            if side == "buy":
-                price      -= delta
-                pos_size   += order_size
-                entry_sum  += order_size
-                entry_price = (
-                    entry_price * (entry_sum - order_size)
-                    + order_size * price
-                ) / entry_sum
-            else:
-                price      += delta
-                pos_size   -= order_size
-                exit_sum   += order_size
-                exit_price = (
-                    exit_price * (exit_sum - order_size)
-                    + order_size * price
-                ) / exit_sum
-
-        if side == "buy":
-            unreal   = (price - entry_price) * pos_size
-            realized = (
-                (exit_price - entry_price) * exit_sum
-                + data["net_funding"]
-            )
-        else:
-            unreal   = (price - entry_price) * pos_size
-            realized = (
-                (exit_price - entry_price) * exit_sum
-                + data["net_funding"]
-            )
-
-        total = unreal + realized
+            price -= delta
+            pos_size += order_size
+            entry_sum += order_size
+            entry_price = (
+                entry_price * (entry_sum - order_size)
+                + order_size * price
+            ) / entry_sum
+        unreal = (price - entry_price) * pos_size
+        realized = (
+            (exit_price - entry_price) * exit_sum + net_funding
+        )
+        buy_total = unreal + realized
 
         if i == 0:
             equity = (
-                data["equity"] - data["unrealized_pnl"]
-                - data["realized_pnl"] + total
+                equity - unrealized_pnl - realized_pnl + buy_total
             )
         else:
-            equity = equity - prev_total + total
+            equity = equity - prev_buy_total + buy_total
 
-        lev      = round((pos_size * price) / equity, 2)
+        lev = round((pos_size * price) / equity, 2)
         pos_size = round(pos_size, 4)
-
-        if side == "buy":
-            include = lev <= leverage_max
-        else:
-            include = lev >= leverage_min
+        include = lev <= leverage_max
+        prev_buy_total = buy_total
 
         plan.append({
-            "side"          : side,
-            "orderPrice"    : round(price, 2),
-            "orderSize"     : order_size,
-            "positionSize"  : round(pos_size, 4),
-            "entrySum"      : round(entry_sum, 4),
-            "entryPrice"    : round(entry_price, 2),
-            "exitSum"       : round(exit_sum, 6),
-            "exitPrice"     : round(exit_price, 2),
-            "fundingPmt"    : data["net_funding"],
-            "realizedPnL"   : round(realized, 2),
-            "unrealizedPnL" : round(unreal, 2),
-            "totalPnL"      : round(total, 2),
+            "side": side,
+            "orderPrice": round(price, 2),
+            "orderSize": order_size,
+            "positionSize": round(pos_size, 4),
+            "entrySum": round(entry_sum, 4),
+            "entryPrice": round(entry_price, 2),
+            "exitSum": round(exit_sum, 6),
+            "exitPrice": round(exit_price, 2),
+            "fundingPmt": net_funding,
+            "realizedPnL": round(realized, 2),
+            "unrealizedPnL": round(unreal, 2),
+            "totalPnL": round(buy_total, 2),
             "equityLeverage": lev,
-            "includeFlag"   : include
+            "includeFlag": include
         })
 
-        prev_total = total
+    # Build sell Plan
+    side = "sell"
+    equity = subaccount["equity"]
+    entry_price = position["entryPrice"]
+    exit_price = position["exitPrice"]
+    order_size = sell_order_size
+    delta = sell_price_delta
+    count = sell_orders_max_qty
+    price = math.floor(
+        (filled_price + delta) / 1000
+    ) * 1000 + 500
+    pos_size = position_size - order_size
+    entry_sum = sum_open
+    entry_price = entry_price
+    exit_sum = sum_close + order_size
+    exit_price = (
+        exit_price * sum_close + order_size * price
+    ) / exit_sum
 
-        # Sort by orderPrice descending
-        plan.sort(
-            key=lambda x: x["orderPrice"],
-            reverse=True
+    for i in range(count):
+        if i > 0:
+            price += delta
+            pos_size -= order_size
+            exit_sum += order_size
+            exit_price = (
+                exit_price * (exit_sum - order_size)
+                + order_size * price
+            ) / exit_sum
+        unreal = (price - entry_price) * pos_size
+        realized = (
+            (exit_price - entry_price) * exit_sum + net_funding
         )
+        sell_total = unreal + realized
+
+        if i == 0:
+            equity = (
+                equity - unrealized_pnl - realized_pnl + sell_total
+            )
+        else:
+            equity = equity - prev_sell_total + sell_total
+
+        lev = round((pos_size * price) / equity, 2)
+        pos_size = round(pos_size, 4)
+        include = lev >= leverage_min
+        prev_sell_total = sell_total
+
+        plan.append({
+            "side": side,
+            "orderPrice": round(price, 2),
+            "orderSize": order_size,
+            "positionSize": round(pos_size, 4),
+            "entrySum": round(entry_sum, 4),
+            "entryPrice": round(entry_price, 2),
+            "exitSum": round(exit_sum, 6),
+            "exitPrice": round(exit_price, 2),
+            "fundingPmt": net_funding,
+            "realizedPnL": round(realized, 2),
+            "unrealizedPnL": round(unreal, 2),
+            "totalPnL": round(sell_total, 2),
+            "equityLeverage": lev,
+            "includeFlag": include
+        })
+
+    # Sort by orderPrice descending
+    plan.sort(key=lambda x: x["orderPrice"], reverse=True)
 
     return plan

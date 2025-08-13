@@ -5,6 +5,10 @@ from datetime import datetime
 from typing import Optional, Type, Dict
 
 
+class BlockHeight(BaseModel):
+    height: int
+    time: datetime
+
 class Market(BaseModel):
     clobPairId: str
     ticker: str
@@ -102,6 +106,7 @@ class Position(BaseModel):
 
 
 _MODEL_REGISTRY: Dict[str, Type[BaseModel]] = {
+    "block_height": BlockHeight,
     "market": Market,
     "filled_order": FilledOrder,
     "open_orders": OpenOrders,

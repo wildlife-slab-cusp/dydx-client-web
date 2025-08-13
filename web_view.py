@@ -14,7 +14,7 @@ def view():
         data = json.load(f)
     paused = os.path.exists("output/paused.flag")
     html = render_data_as_html(
-        timestamp=data["timestamp"],
+        block_height=data["block_height"],
         market=data["market"],
         subaccount=data["subaccount"],
         position=data["position"],
