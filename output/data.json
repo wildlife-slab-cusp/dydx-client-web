@@ -1,20 +1,20 @@
 {
   "block_height": {
-    "height": 52726008,
-    "time": "2025-08-14T14:04:37.774000Z"
+    "height": 52728406,
+    "time": "2025-08-14T14:44:12.597000Z"
   },
   "market": {
     "clobPairId": "0",
     "ticker": "BTC-USD",
     "status": "ACTIVE",
-    "oraclePrice": 118355.97485,
-    "priceChange24H": -3631.62396,
-    "volume24H": 176565596.8895,
-    "trades24H": 25350,
-    "nextFundingRate": 1.9075e-05,
+    "oraclePrice": 119258.40822,
+    "priceChange24H": -2304.75014,
+    "volume24H": 173836423.9178,
+    "trades24H": 25067,
+    "nextFundingRate": 3.49431818181818e-06,
     "initialMarginFraction": 0.02,
     "maintenanceMarginFraction": 0.012,
-    "openInterest": 473.9804,
+    "openInterest": 471.3558,
     "atomicResolution": -10,
     "quantumConversionExponent": -9,
     "tickSize": 1.0,
@@ -30,11 +30,11 @@
   "subaccount": {
     "address": "dydx1wc9f83egmflu2vge68wwpsfy0lsm3eppmp9r5d",
     "subaccountNumber": 0,
-    "equity": 1212.018231925,
-    "freeCollateral": 1139.8210872665,
+    "equity": 1239.54244971,
+    "freeCollateral": 1166.7948206958,
     "marginEnabled": true,
     "updatedAtHeight": 52722182,
-    "latestProcessedBlockHeight": 52726009
+    "latestProcessedBlockHeight": 52728407
   },
   "position": {
     "market": "BTC-USD",
@@ -45,7 +45,7 @@
     "entryPrice": 109427.19305993691,
     "exitPrice": 112483.50703125,
     "realizedPnl": 270.6712403280757,
-    "unrealizedPnl": 272.3278445969243,
+    "unrealizedPnl": 299.85206238192427,
     "createdAt": "2024-12-09T07:36:52.882000Z",
     "createdAtHeight": 32063256,
     "closedAt": null,
@@ -374,7 +374,7 @@
   ],
   "order_plan": [
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 133500,
       "orderSize": 0.001,
       "positionSize": 0.0155,
@@ -390,7 +390,7 @@
       "includeFlag": false
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 132500,
       "orderSize": 0.001,
       "positionSize": 0.0165,
@@ -406,7 +406,7 @@
       "includeFlag": false
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 131500,
       "orderSize": 0.001,
       "positionSize": 0.0175,
@@ -422,7 +422,7 @@
       "includeFlag": false
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 130500,
       "orderSize": 0.001,
       "positionSize": 0.0185,
@@ -438,7 +438,7 @@
       "includeFlag": false
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 129500,
       "orderSize": 0.001,
       "positionSize": 0.0195,
@@ -454,7 +454,7 @@
       "includeFlag": false
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 128500,
       "orderSize": 0.001,
       "positionSize": 0.0205,
@@ -470,7 +470,7 @@
       "includeFlag": false
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 127500,
       "orderSize": 0.001,
       "positionSize": 0.0215,
@@ -486,7 +486,7 @@
       "includeFlag": false
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 126500,
       "orderSize": 0.001,
       "positionSize": 0.0225,
@@ -502,7 +502,7 @@
       "includeFlag": false
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 125500,
       "orderSize": 0.001,
       "positionSize": 0.0235,
@@ -518,7 +518,7 @@
       "includeFlag": true
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 124500,
       "orderSize": 0.001,
       "positionSize": 0.0245,
@@ -534,7 +534,7 @@
       "includeFlag": true
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 123500,
       "orderSize": 0.001,
       "positionSize": 0.0255,
@@ -550,7 +550,7 @@
       "includeFlag": true
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 122500,
       "orderSize": 0.001,
       "positionSize": 0.0265,
@@ -566,7 +566,7 @@
       "includeFlag": true
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 121500,
       "orderSize": 0.001,
       "positionSize": 0.0275,
@@ -582,7 +582,7 @@
       "includeFlag": true
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 120500,
       "orderSize": 0.001,
       "positionSize": 0.0285,
@@ -598,7 +598,7 @@
       "includeFlag": true
     },
     {
-      "side": "sell",
+      "side": "SELL",
       "orderPrice": 119500,
       "orderSize": 0.001,
       "positionSize": 0.0295,
@@ -614,7 +614,7 @@
       "includeFlag": true
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 117500,
       "orderSize": 0.0011,
       "positionSize": 0.0316,
@@ -630,7 +630,7 @@
       "includeFlag": true
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 116500,
       "orderSize": 0.0011,
       "positionSize": 0.0327,
@@ -646,7 +646,7 @@
       "includeFlag": true
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 115500,
       "orderSize": 0.0011,
       "positionSize": 0.0338,
@@ -662,7 +662,7 @@
       "includeFlag": true
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 114500,
       "orderSize": 0.0011,
       "positionSize": 0.0349,
@@ -678,7 +678,7 @@
       "includeFlag": true
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 113500,
       "orderSize": 0.0011,
       "positionSize": 0.036,
@@ -694,7 +694,7 @@
       "includeFlag": true
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 112500,
       "orderSize": 0.0011,
       "positionSize": 0.0371,
@@ -710,7 +710,7 @@
       "includeFlag": false
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 111500,
       "orderSize": 0.0011,
       "positionSize": 0.0382,
@@ -726,7 +726,7 @@
       "includeFlag": false
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 110500,
       "orderSize": 0.0011,
       "positionSize": 0.0393,
@@ -742,7 +742,7 @@
       "includeFlag": false
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 109500,
       "orderSize": 0.0011,
       "positionSize": 0.0404,
@@ -758,7 +758,7 @@
       "includeFlag": false
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 108500,
       "orderSize": 0.0011,
       "positionSize": 0.0415,
@@ -774,7 +774,7 @@
       "includeFlag": false
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 107500,
       "orderSize": 0.0011,
       "positionSize": 0.0426,
@@ -790,7 +790,7 @@
       "includeFlag": false
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 106500,
       "orderSize": 0.0011,
       "positionSize": 0.0437,
@@ -806,7 +806,7 @@
       "includeFlag": false
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 105500,
       "orderSize": 0.0011,
       "positionSize": 0.0448,
@@ -822,7 +822,7 @@
       "includeFlag": false
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 104500,
       "orderSize": 0.0011,
       "positionSize": 0.0459,
@@ -838,7 +838,7 @@
       "includeFlag": false
     },
     {
-      "side": "buy",
+      "side": "BUY",
       "orderPrice": 103500,
       "orderSize": 0.0011,
       "positionSize": 0.047,
@@ -856,9 +856,9 @@
   ],
   "order_actions": [
     {
-      "type": "cancel",
+      "type": "CANCEL",
       "id": "a55c95b4-5dce-5cec-9179-6736299f4c4b",
-      "side": "buy",
+      "side": "BUY",
       "price": 90000.0,
       "size": 0.0001
     }

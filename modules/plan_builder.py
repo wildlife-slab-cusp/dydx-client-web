@@ -54,7 +54,7 @@ def build_order_plan(subaccount, filled_order, position):
     sum_close = position["sumClose"]
 
     # Build Buy Plan
-    side = "buy"
+    side = "BUY"
     equity = subaccount["equity"]
     entry_price = position["entryPrice"]
     exit_price = position["exitPrice"]
@@ -113,7 +113,7 @@ def build_order_plan(subaccount, filled_order, position):
         })
 
     # Build sell Plan
-    side = "sell"
+    side = "SELL"
     equity = subaccount["equity"]
     entry_price = position["entryPrice"]
     exit_price = position["exitPrice"]

@@ -48,7 +48,7 @@ def cancel_orders_from_file():
     # Extract only cancel actions
     orders_to_cancel = [
         action for action in data["order_actions"]
-        if action["type"] == "cancel"
+        if action["type"] == "CANCEL"
     ]
 
     if not orders_to_cancel:

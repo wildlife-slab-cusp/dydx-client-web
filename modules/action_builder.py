@@ -9,7 +9,7 @@ def build_order_actions(open_orders_data, order_plan_data):
     open_orders = [
         {
             "id"   : o.get("id"),
-            "side" : o["side"].lower(),
+            "side" : o["side"].upper(),
             "price": float(o["price"]),
             "size" : float(o["size"]),
         }
@@ -20,7 +20,7 @@ def build_order_actions(open_orders_data, order_plan_data):
     # Normalize planned orders
     planned_orders = [
         {
-            "side" : p["side"].lower(),
+            "side" : p["side"].upper(),
             "price": float(p["orderPrice"]),
             "size" : float(p["orderSize"]),
         }
@@ -57,7 +57,7 @@ def order_actions(open_orders, planned_orders):
                 if extra <= 0:
                     break
                 actions.append({
-                    "type" : "cancel",
+                    "type" : "CANCEL",
                     "id"   : o["id"],  # ID needed to cancel
                     "side" : o["side"],
                     "price": o["price"],
@@ -72,7 +72,7 @@ def order_actions(open_orders, planned_orders):
             missing = plan_count - open_count
             for _ in range(missing):
                 actions.append({
-                    "type" : "place",
+                    "type" : "PLACE",
                     "side" : order_key[0],
                     "price": order_key[1],
                     "size" : order_key[2],
