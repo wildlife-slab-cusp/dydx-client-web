@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, Type, Dict
 
-
 class BlockHeight(BaseModel):
     height: int
     time: datetime
@@ -33,7 +32,6 @@ class Market(BaseModel):
     baseOpenInterest: float
     defaultFundingRate1H: float
 
-
 class FilledOrder(BaseModel):
     id: str
     side: str
@@ -50,7 +48,6 @@ class FilledOrder(BaseModel):
     orderId: str
     clientMetadata: str
     subaccountNumber: int
-
 
 class OpenOrders(BaseModel):
     id: str
@@ -75,7 +72,6 @@ class OpenOrders(BaseModel):
     ticker: str
     subaccountNumber: int
 
-
 class Subaccount(BaseModel):
     address: str
     subaccountNumber: int
@@ -84,7 +80,6 @@ class Subaccount(BaseModel):
     marginEnabled: bool
     updatedAtHeight: int
     latestProcessedBlockHeight: int
-
 
 class Position(BaseModel):
     market: str
@@ -103,7 +98,6 @@ class Position(BaseModel):
     sumClose: float
     netFunding: float
     subaccountNumber: int
-
 
 _MODEL_REGISTRY: Dict[str, Type[BaseModel]] = {
     "block_height": BlockHeight,

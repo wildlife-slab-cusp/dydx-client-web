@@ -81,7 +81,7 @@ def render_data_as_html(
     return_p = (100 * total_pnl / risk)
 
     pos_fmt = [[
-        size,
+        f"{size:,.4f}",
         f"${risk:,.2f}",
         f"${total_pnl:,.2f}",
         f"${equity:,.2f}",
@@ -97,32 +97,45 @@ def render_data_as_html(
         pos_fmt
     )
 
-    # 🧾 Open Orders
-    orders_fmt = [
+    # 🏁 Last Filled Order
+    filled_fmt = [[
+        filled_order["side"],
+        f"${filled_order['price']:,.2f}",
+        f"{filled_order['size']:.4f}",
+        f"{filled_order['size']:.4f}",
+    ]]
+    html += render_table(
+        "🏁 Last Filled Order",
+        ["Side", "Price", "Size", "Filled"],
+        filled_fmt
+    )
+
+    # ⏳ Open Orders
+    open_fmt = [
         [
-            o.get("side", "—"),
-            f"${o.get('price', 0):,.2f}",
-            f"{o.get('size', 0):.4f}",
-            f"{o.get('totalFilled', 0):.4f}",
+            o["side"],
+            f"${o['price']:,.2f}",
+            f"{o['size']:.4f}",
+            f"{o['totalFilled']:.4f}",
         ]
         for o in open_orders
     ]
     html += render_table(
-        "🧾 Open Orders",
+        "⏳ Open Orders",
         ["Side", "Price", "Size", "Filled"],
-        orders_fmt
+        open_fmt
     )
 
     # 🛒 Order Plan (buy + sell)
     plan_fmt = [
         [
-            p.get("side", "—").upper(),
+            p["side"],
             f"${p['orderPrice']:,.2f}",
             f"{p['orderSize']:.4f}",
             f"{p['positionSize']:.4f}",
             f"${p['totalPnL']:,.2f}",
             f"{p['equityLeverage']:,.2f}",
-            "✅" if p.get("includeFlag") else "❌"
+            "✅" if p["includeFlag"] else "❌"
         ]
         for p in order_plan
     ]
@@ -137,8 +150,7 @@ def render_data_as_html(
     order_actions = order_actions or []
     actions_fmt = [
         [
-            a["type"].upper(),
-            a.get("id", "—"),  # Only cancel actions have IDs
+            a["type"],
             a["side"],
             f"${a['price']:,.2f}",
             f"{a['size']:.4f}",
@@ -148,7 +160,7 @@ def render_data_as_html(
 
     html += render_table(
         "⚙️ Order Actions",
-        ["Type", "ID", "Side", "Price", "Size"],
+        ["Type", "Side", "Price", "Size"],
         actions_fmt
     )
 

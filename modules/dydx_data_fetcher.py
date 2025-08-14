@@ -15,8 +15,8 @@ def dydx_fetch_data(address, ticker="BTC-USD", subaccount_number=0):
         open_orders = dydx.fetch_open_orders(address, sub_num)
 
         market = market["markets"][ticker]
-        account["subaccount"].pop("assetPositions")
-        subaccount = copy.deepcopy(account["subaccount"])
+        subaccount = account["subaccounts"].pop(0)
+        subaccount.pop("assetPositions")
         position = subaccount["openPerpetualPositions"].pop(ticker)
         subaccount.pop("openPerpetualPositions")
         filled_order = filled_order[0]
@@ -27,6 +27,7 @@ def dydx_fetch_data(address, ticker="BTC-USD", subaccount_number=0):
         position = cast_type(position, "position")
         filled_order = cast_type(filled_order, "filled_order")
         open_orders = cast_type(open_orders, "open_orders")
+
         open_orders.sort(key=lambda x: x["price"], reverse=True)
 
         #print(f"Block Height:\n{json.dumps(block_height, indent=2)}")

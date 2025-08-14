@@ -49,8 +49,18 @@ def main():
             os.makedirs("output", exist_ok=True)
             with open("output/data.json", "w") as f:
                 json.dump(out, f, indent=2)
+
         except Exception as e:
             print("Error in pipeline:", e)
+
+        #def start_process(cmd):
+        #    print(f"Starting: {' '.join(cmd)}", flush=True)
+        #    return subprocess.Popen(cmd)
+
+        #canceller = start_process(
+        #    ["python", "modules/order_canceller.py"]
+        #)
+
         time.sleep(60)
 
 if __name__ == "__main__":

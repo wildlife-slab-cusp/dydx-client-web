@@ -5,6 +5,13 @@ import math
 import psycopg2
 import sqlite3
 
+def snap_to_midpoint(value, delta):
+    """Snap value to midpoint of the step size implied by delta."""
+    # Step is the largest power of 10 that divides delta
+    step = 10 ** int(math.log10(delta))
+    midpoint = step // 2
+    return math.floor(value / step) * step + midpoint
+
 def build_order_plan(subaccount, filled_order, position):
     """Build combined order plan for 'buy' and 'sell' sides."""
     plan = []
@@ -54,7 +61,7 @@ def build_order_plan(subaccount, filled_order, position):
     order_size = buy_order_size
     delta = buy_price_delta
     count = buy_orders_max_qty
-    price = math.floor((filled_price - delta) / 1000) * 1000 + 500
+    price = snap_to_midpoint(filled_price, delta) - delta
     pos_size = position_size + order_size
     entry_sum = sum_open + order_size
     entry_price = (
@@ -113,9 +120,7 @@ def build_order_plan(subaccount, filled_order, position):
     order_size = sell_order_size
     delta = sell_price_delta
     count = sell_orders_max_qty
-    price = math.floor(
-        (filled_price + delta) / 1000
-    ) * 1000 + 500
+    price = snap_to_midpoint(filled_price, delta) + delta
     pos_size = position_size - order_size
     entry_sum = sum_open
     entry_price = entry_price

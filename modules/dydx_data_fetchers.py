@@ -20,7 +20,7 @@ def fetch_block_height():
         print(f"❌ Fetch block height failed: {e}")
         return None
 
-def fetch_market(ticker="BTC-USD"):
+def fetch_market(ticker):
     try:
         url = MARKET_URL
         params = {"ticker": ticker}
@@ -35,11 +35,9 @@ def fetch_market(ticker="BTC-USD"):
         print(f"❌ Fetch market failed: {e}")
         return None
 
-def fetch_account(address, subaccount_number=0):
+def fetch_account(address):
     try:
-        url = (
-            f"{ACCOUNT_URL}/{address}/"
-            f"subaccountNumber/{subaccount_number}/")
+        url = (f"{ACCOUNT_URL}/{address}/")
         headers = {"Accept": "application/json"}
         resp = requests.get(url, headers=headers, timeout=10)
         resp.raise_for_status()
@@ -49,7 +47,7 @@ def fetch_account(address, subaccount_number=0):
         print(f"❌ Fetch account failed: {e}")
         return None
 
-def fetch_filled_order(address, subaccount_number=0, limit=1):
+def fetch_filled_order(address, subaccount_number, limit=1):
     try:
         url = FILLS_URL
         params = {
@@ -68,7 +66,7 @@ def fetch_filled_order(address, subaccount_number=0, limit=1):
         print(f"❌ Fetch last filled order failed: {e}")
         return None
 
-def fetch_open_orders(address, subaccount_number=0):
+def fetch_open_orders(address, subaccount_number):
     try:
         url = ORDERS_URL
         params = {
