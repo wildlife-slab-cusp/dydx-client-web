@@ -41,9 +41,10 @@ def render_data_as_html(
     timestamp = block_height["time"][14:16]
     equity = subaccount["equity"]
     size = position["size"]
-    leverage = round(size * market["oraclePrice"] / equity, 2)
-    liquidation = (1.008 - 1 / leverage) * market["oraclePrice"]
+    leverage = size * market["oraclePrice"] / equity
+    liquidation = (1.0085 - 1 / leverage) * market["oraclePrice"]
     cushion = market["oraclePrice"] - liquidation
+    leverage = round(leverage, 2)
     pnl = position["realizedPnl"] + position["unrealizedPnl"]
     risk = equity - pnl
     return_p = (100 * pnl / risk)
