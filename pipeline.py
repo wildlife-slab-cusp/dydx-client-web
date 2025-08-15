@@ -3,7 +3,7 @@
 import os, json, time
 from datetime import datetime, timezone, timedelta
 from modules.address_store import get_address
-from modules.dydx_data_fetcher import dydx_fetch_data
+from modules.dydx_fetcher import fetch_dydx
 from modules.plan_builder import build_order_plan
 from modules.action_builder import build_order_actions
 
@@ -18,7 +18,7 @@ def main():
             print("No address found.")
             time.sleep(60)
             continue
-        dydx_data = dydx_fetch_data(address)
+        dydx_data = fetch_dydx(address)
         if not dydx_data:
             print("Failed to fetch dydx data")
             time.sleep(60)

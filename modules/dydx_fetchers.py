@@ -1,4 +1,4 @@
-# modules/dydx_data_fetchers.py - updated 2025-08-13
+# modules/dydx_fetchers.py - updated 2025-08-13
 
 import requests
 
