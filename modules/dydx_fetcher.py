@@ -5,7 +5,7 @@ import json, copy
 import modules.dydx_fetchers as dydx
 from modules.type_caster import cast_type
 
-def fetch_dydx(address, ticker="BTC-USD", subaccount_number=0):
+def fetch_dydx(address, ticker, subaccount_number=0):
     sub_num = subaccount_number
     try:
         block_height = dydx.fetch_block_height()

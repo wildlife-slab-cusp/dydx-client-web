@@ -12,39 +12,18 @@ def snap_to_midpoint(value, delta):
     midpoint = step // 2
     return math.floor(value / step) * step + midpoint
 
-def build_order_plan(subaccount, filled_order, position):
+def build_order_plans(config, subaccount, filled_order, position):
     """Build combined order plan for 'buy' and 'sell' sides."""
-    plan = []
+    plans = []
 
-    # Select configuration values from Neon Postgres plan_cfg table
-    db_url = os.environ.get("DATABASE_URL")
-    if not db_url:
-        raise RuntimeError("DATABASE_URL not set")
-    with psycopg2.connect(db_url) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT
-                    buy_order_size,
-                    sell_order_size,
-                    buy_price_delta,
-                    sell_price_delta,
-                    buy_orders_max_qty,
-                    sell_orders_max_qty,
-                    leverage_max,
-                    leverage_min
-                FROM plan_cfg
-            """)
-            (
-                buy_order_size,
-                sell_order_size,
-                buy_price_delta,
-                sell_price_delta,
-                buy_orders_max_qty,
-                sell_orders_max_qty,
-                leverage_max,
-                leverage_min
-            ) = cur.fetchone()
-
+    buy_order_size = config["buy_order_size"]
+    sell_order_size = config["sell_order_size"]
+    buy_price_delta = config["buy_price_delta"]
+    sell_price_delta = config["sell_price_delta"]
+    buy_orders_max_qty = config["buy_orders_max_qty"]
+    sell_orders_max_qty = config["sell_orders_max_qty"]
+    leverage_max = config["leverage_max"]
+    leverage_min = config["leverage_min"]
     filled_price = filled_order["price"]
     position_size = position["size"]
     net_funding = position["netFunding"]
@@ -53,7 +32,7 @@ def build_order_plan(subaccount, filled_order, position):
     sum_open = position["sumOpen"]
     sum_close = position["sumClose"]
 
-    # Build Buy Plan
+    # Build Buy Plans
     side = "BUY"
     equity = subaccount["equity"]
     entry_price = position["entryPrice"]
@@ -95,7 +74,7 @@ def build_order_plan(subaccount, filled_order, position):
         include = lev <= leverage_max
         prev_buy_total = buy_total
 
-        plan.append({
+        plans.append({
             "side": side,
             "orderPrice": round(price, 2),
             "orderSize": order_size,
@@ -112,7 +91,7 @@ def build_order_plan(subaccount, filled_order, position):
             "includeFlag": include
         })
 
-    # Build sell Plan
+    # Build sell Plans
     side = "SELL"
     equity = subaccount["equity"]
     entry_price = position["entryPrice"]
@@ -156,7 +135,7 @@ def build_order_plan(subaccount, filled_order, position):
         include = lev >= leverage_min
         prev_sell_total = sell_total
 
-        plan.append({
+        plans.append({
             "side": side,
             "orderPrice": round(price, 2),
             "orderSize": order_size,
@@ -174,6 +153,6 @@ def build_order_plan(subaccount, filled_order, position):
         })
 
     # Sort by orderPrice descending
-    plan.sort(key=lambda x: x["orderPrice"], reverse=True)
+    plans.sort(key=lambda x: x["orderPrice"], reverse=True)
 
-    return plan
+    return plans

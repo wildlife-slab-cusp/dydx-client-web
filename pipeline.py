@@ -1,10 +1,12 @@
-# pipeline.py - updated 2025-08-13
+# pipeline.py - updated 2025-08-16
 
 import os, json, time
+
 from datetime import datetime, timezone, timedelta
-from modules.address_store import get_address
+from modules.postgresql_fetcher import fetch_config
 from modules.dydx_fetcher import fetch_dydx
-from modules.plan_builder import build_order_plan
+from modules.calculation_handler import handle_calculations
+from modules.plan_builder import build_order_plans
 from modules.action_builder import build_order_actions
 
 def main():
@@ -12,30 +14,30 @@ def main():
         if os.path.exists("output/paused.flag"):
             time.sleep(60)
             continue
-        db_url = os.environ.get("DATABASE_URL")
-        address = get_address(db_url)
-        if not address:
+        config = fetch_config()
+        if not config["address"]:
             print("No address found.")
             time.sleep(60)
             continue
-        dydx_data = fetch_dydx(address)
+        dydx_data = fetch_dydx(config["address"], config["ticker"])
         if not dydx_data:
             print("Failed to fetch dydx data")
             time.sleep(60)
             continue
-
         block_height = dydx_data["block_height"]
         market = dydx_data["market"]
         subaccount = dydx_data["subaccount"]
         position = dydx_data["position"]
         filled_order = dydx_data["filled_order"]
         open_orders = dydx_data["open_orders"]
-
+        order_plans = build_order_plans(
+            config, subaccount, filled_order, position
+        )
+        order_actions = build_order_actions(open_orders, order_plans)
+        calculated = handle_calculations(
+            market, subaccount, position
+        )
         try:
-            order_plan = build_order_plan(
-                subaccount, filled_order, position
-            )
-            actions = build_order_actions(open_orders, order_plan)
             out = {
                 "block_height": block_height,
                 "market": market,
@@ -43,13 +45,13 @@ def main():
                 "position": position,
                 "filled_order": filled_order,
                 "open_orders": open_orders,
-                "order_plan": order_plan,
-                "order_actions": actions
+                "order_plans": order_plans,
+                "order_actions": order_actions,
+                "calculated": calculated
             }
             os.makedirs("output", exist_ok=True)
             with open("output/data.json", "w") as f:
                 json.dump(out, f, indent=2)
-
         except Exception as e:
             print("Error in pipeline:", e)
 

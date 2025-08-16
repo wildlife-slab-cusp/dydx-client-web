@@ -34,20 +34,10 @@ def render_table(title, headers, rows):
 
 def render_data_as_html(
     block_height, market, subaccount, position, filled_order,
-    open_orders, order_plan, order_actions
+    open_orders, order_plans, order_actions, calculated
 ):
 
-    # Calculations
     timestamp = block_height["time"][14:16]
-    equity = subaccount["equity"]
-    size = position["size"]
-    leverage = size * market["oraclePrice"] / equity
-    liquidation = (1.0085 - 1 / leverage) * market["oraclePrice"]
-    cushion = market["oraclePrice"] - liquidation
-    leverage = round(leverage, 2)
-    pnl = position["realizedPnl"] + position["unrealizedPnl"]
-    risk = equity - pnl
-    return_p = (100 * pnl / risk)
 
     html = (
         "<html><head>"
@@ -61,32 +51,34 @@ def render_data_as_html(
     market_fmt = [[
         market["ticker"],
         f"${market['oraclePrice']:,.2f}",
-        f"${liquidation:,.2f}",
-        f"${cushion:,.2f}",
+        f"${calculated['liquidation']:,.2f}",
+        f"${calculated['cushion']:,.2f}",
     ]]
 
     html += render_table(
         "📊 Market",
-        ["Ticker", "Oracle Price", "Liquidation", "Cushion"],
+        ["Ticker", "Oracle Price", "Liq. Est.", "Cushion"],
         market_fmt
     )
 
     # 📈 Open Position
+    pnl = calculated["pnl"]
+    pnl_p = calculated["pnl_p"]
     funding = position["netFunding"]
 
     pos_fmt = [[
-        f"{size:,.4f}",
-        f"${risk:,.2f}",
+        f"{position['size']:,.4f}",
+        f"${calculated['deposit']:,.2f}",
         f"{'-' if pnl < 0 else '+'}${abs(pnl):,.2f}",
-        f"{'' if return_p < 0 else '+'}{return_p:.2f}%",
-        f"${equity:,.2f}",
-        f"{leverage:,.2f}",
+        f"{'' if pnl_p < 0 else '+'}{pnl_p:.2f}%",
+        f"${subaccount['equity']:,.2f}",
+        f"{calculated['leverage']:,.2f}",
         f"{'-' if funding < 0 else '+'}${abs(funding):,.2f}",
     ]]
 
     html += render_table(
         "📈 Position",
-        ["Size", "Deposit", "PnL", "+ / -", "Equity",
+        ["Size", "Deposit", "PnL", "PnL%", "Equity",
             "Leverage", "Funding"],
         pos_fmt
     )
@@ -120,7 +112,7 @@ def render_data_as_html(
         combined_rows
     )
 
-    # 🛒 Order Plan (buy + sell)
+    # 🛒 Order Plans (buy + sell)
     plan_fmt = [
         [
             p["side"],
@@ -131,7 +123,7 @@ def render_data_as_html(
             f"{p['equityLeverage']:,.2f}",
             "✅" if p["includeFlag"] else "❌",
         ]
-        for p in order_plan
+        for p in order_plans
     ]
     html += render_table(
         "🛒 Order Plan",

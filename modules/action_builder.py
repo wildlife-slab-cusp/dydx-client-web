@@ -2,7 +2,7 @@
 
 from collections import Counter
 
-def build_order_actions(open_orders_data, order_plan_data):
+def build_order_actions(open_orders, order_plans):
     """Build order actions from dydx data and generated plan."""
 
     # Normalize open orders
@@ -13,25 +13,24 @@ def build_order_actions(open_orders_data, order_plan_data):
             "price": float(o["price"]),
             "size" : float(o["size"]),
         }
-        for o in open_orders_data
-        if o.get("status", "").upper() == "OPEN"
+        for o in open_orders
     ]
 
     # Normalize planned orders
-    planned_orders = [
+    order_plans = [
         {
             "side" : p["side"].upper(),
             "price": float(p["orderPrice"]),
             "size" : float(p["orderSize"]),
         }
-        for p in order_plan_data
+        for p in order_plans
         if p.get("includeFlag")
     ]
 
-    return order_actions(open_orders, planned_orders)
+    return order_actions(open_orders, order_plans)
 
 
-def order_actions(open_orders, planned_orders):
+def order_actions(open_orders, order_plans):
     actions = []
 
     # Count identical orders
@@ -41,7 +40,7 @@ def order_actions(open_orders, planned_orders):
     )
     plan_counter = Counter(
         (p["side"], p["price"], p["size"])
-        for p in planned_orders
+        for p in order_plans
     )
 
     # Cancel extra open orders

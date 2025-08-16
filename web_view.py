@@ -20,8 +20,9 @@ def view():
         position=data["position"],
         filled_order=data["filled_order"],
         open_orders=data["open_orders"],
-        order_plan=data["order_plan"],
-        order_actions=data["order_actions"]
+        order_plans=data["order_plans"],
+        order_actions=data["order_actions"],
+        calculated=data["calculated"]
     )
 
     btn = (
